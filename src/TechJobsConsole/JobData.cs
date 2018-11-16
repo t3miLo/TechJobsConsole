@@ -1,7 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Text;
+
 
 namespace TechJobsConsole
 {
@@ -10,7 +14,8 @@ namespace TechJobsConsole
         static List<Dictionary<string, string>> AllJobs = new List<Dictionary<string, string>>();
         static bool IsDataLoaded = false;
 
-        public static List<Dictionary<string, string>> FindAll()
+
+		public static List<Dictionary<string, string>> FindAll()
         {
             LoadData();
             return AllJobs;
@@ -38,6 +43,31 @@ namespace TechJobsConsole
             return values;
         }
 
+		public static List<Dictionary<string,string>> FindByValue(string value)
+		{
+			LoadData();
+
+			List<Dictionary<string, string>> jobs = new List<Dictionary<string, string>>();
+
+			foreach (Dictionary<string, string> row in AllJobs)
+			{
+				foreach(KeyValuePair<string, string> val in row)
+				{
+					string valResult = val.Value;
+					int result = valResult.IndexOf(value, StringComparison.OrdinalIgnoreCase);
+					//Console.WriteLine(valResult + " /// " + value + "/// " + result);
+					if(result >= 0)
+					{
+						jobs.Add(row);
+					}
+
+				}
+				
+			}
+
+			return jobs;
+		}
+
         public static List<Dictionary<string, string>> FindByColumnAndValue(string column, string value)
         {
             // load data, if not already loaded
@@ -49,12 +79,16 @@ namespace TechJobsConsole
             {
                 string aValue = row[column];
 
-                if (aValue.Contains(value))
+				int compare = String.Compare(aValue, value);
+				
+
+				if (compare >= 0)
                 {
                     jobs.Add(row);
                 }
+				
             }
-
+			
             return jobs;
         }
 
